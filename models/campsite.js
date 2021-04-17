@@ -2,6 +2,8 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 require('mongoose-currency').loadType(mongoose);
+// The constant Currenry is jsut a short hand for mongoose.Types.Currency
+// which is used later in the cost object
 const Currency = mongoose.Types.Currency;
 
 const commentSchema = new Schema({
@@ -54,6 +56,8 @@ const campsiteSchema = new Schema({
     timestamps: true
 });
 
+// After the Schema is created, a model is created in order 
+// to export the entire Schema in to the campsiteRouter
 const Campsite = mongoose.model('Campsite', campsiteSchema);
 
 module.exports = Campsite;
