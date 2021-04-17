@@ -72,5 +72,4 @@ promotionRouter.route('/:promotionId')
             .catch(err => next(err));
     });
 
-
 module.exports = promotionRouter;
