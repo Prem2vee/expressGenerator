@@ -5,6 +5,7 @@ const JwtStrategy = require('passport-jwt').Strategy;
 const ExtractJwt = require('passport-jwt').ExtractJwt;
 const jwt = require('jsonwebtoken');
 const FacebookTokenStrategy = require('passport-facebook-token');
+const LinkedInTokenStrategy = require('passport-linkedin-oauth2-token').Strategy;
 
 const config =require('./config');
 
@@ -68,6 +69,39 @@ exports.facebookPassport = passport.use(
                 } else {
                     user = new User({username: profile.displayName});
                     user.facebookId = profile.id;
+                    user.firstname =profile.name.givenName;
+                    user.lastname = profile.name.familyName;
+                    user.save((err, user) => {
+                        if (err) {
+                            return done(err, false);
+                        } else {
+                            return done(null, user);
+                        }
+                    });
+                }
+            });
+
+        }
+    )
+);
+
+exports.linkedinPassport = passport.use(
+    new LinkedInTokenStrategy(
+        {
+            clientID: config.linkedin.clientId,
+            clientSecret: config.linkedin.clientSecret,
+            scope: [ 'r_liteprofile', 'r_emailaddress']
+        },
+        (accessToken, refreshToken, profile, done) => {
+            User.findOne({linkedinId: profile.id}, (err, user) => {
+                if(err) {
+                    return done(err, false)
+                }
+                if(!err && user) {
+                    return done(null, user);
+                } else {
+                    user = new User({username: profile.displayName});
+                    user.linkedinId = profile.id;
                     user.firstname =profile.name.givenName;
                     user.lastname = profile.name.familyName;
                     user.save((err, user) => {
